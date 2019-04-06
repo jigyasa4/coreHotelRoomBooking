@@ -35,6 +35,7 @@ namespace coreCustomer.Controllers
         }
         public ViewResult Details(int id)
         {
+            //detail action
             Hotels hotel = context.Hotels.
                 Where(x => x.HotelId == id).SingleOrDefault();
             ViewBag.Hotel = hotel;
@@ -45,7 +46,7 @@ namespace coreCustomer.Controllers
         [Route("search")]
         [HttpGet]
         public IActionResult Search(string search,string checkIn,string checkOut)
-        {
+        {//search action
             HttpContext.Session.SetString("Search", search.ToString());
             HttpContext.Session.SetString("CheckIn", checkIn.ToString());
             HttpContext.Session.SetString("CheckOut", checkOut.ToString());
