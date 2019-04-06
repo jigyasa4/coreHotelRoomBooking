@@ -1,0 +1,71 @@
+﻿@model IEnumerable<coreHotelRoomBookingAdminPortal.Models.RoomFacility>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Index</h2>
+
+<a asp-action="Create" asp-controller="RoomFacility" class="btn btn-success">Insert New Room Facility</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.RoomFacilityId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsAvailable)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Wifi)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AirConditioner)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Refrigerator)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoomId)
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modeItem => item.RoomFacilityId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modeItem => item.IsAvailable)
+                </td>
+                <td>
+                    @Html.DisplayFor(modeItem => item.Wifi)
+                </td>
+                <td>
+                    @Html.DisplayFor(modeItem => item.AirConditioner)
+                </td>
+                <td>
+                    @Html.DisplayFor(modeItem => item.Refrigerator)
+                </td>
+                <td>
+                    @Html.DisplayFor(modeItem => item.RoomId)
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.RoomFacilityId" class="btn btn-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.RoomFacilityId" class="btn btn-info">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.RoomFacilityId" class="btn btn-info">Delete</a>
+
+                    @* <a asp-controller="Book"
+        asp-action="Details"
+        asp-route-id="@item.BookId">Details</a>*@
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+

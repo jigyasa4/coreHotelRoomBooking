@@ -1,0 +1,42 @@
+﻿@model IEnumerable<coreCustomer.Models.Bookings>
+@{
+    ViewData["Title"] = "OrderHistory";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<h2>OrderHistory</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Booking Date
+            </th>
+            <th>
+                Booking Price
+            </th>
+            <th>
+                Action
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewBag.bkng)
+        {
+            <tr>
+                <td>
+                   @item.BookingDate
+                </td>
+                <td>
+                    @item.BookingPrice
+                </td>
+                <td>
+                    <a asp-controller="Book" asp-action="History" asp-route-id="@item.BookingId" class="btn btn-primary">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+
+</table>
+

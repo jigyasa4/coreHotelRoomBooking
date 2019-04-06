@@ -1,0 +1,86 @@
+﻿@model coreHotelRoomBookingAdminPortal.Models.HotelRoom
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h2>Delete</h2>
+<h3>Are You Sure You Want To delete this?</h3>
+@*<form asp-action="Delete" asp-controller="HotelRoom">
+    <input type="hidden" asp-for="RoomId" />
+    <br />
+    <label asp-for="RoomType"></label>
+    <input asp-for="RoomType" />
+    <br />
+    <label asp-for="RoomPrice"></label>
+    <input asp-for="RoomPrice" />
+    <br />
+    <label asp-for="RoomDescription"></label>
+    <input asp-for="RoomDescription" />
+    <br />
+    <label asp-for="RoomImage"></label>
+    <input asp-for="RoomImage" />
+    <br />
+    <label asp-for="HotelId"></label>
+    <select asp-for="HotelId" asp-items="ViewBag.hotelrooms"></select>
+    <br />
+    <input type="submit" value="Delete" class="btn btn-primary" />
+    @Html.ActionLink("Back to List", "Index")
+</form>*@
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.RoomId)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.RoomId)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.RoomType)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.RoomType)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.RoomPrice)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.RoomPrice)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.RoomDescription)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.RoomDescription)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.RoomImage)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.RoomImage)
+        </td>
+    </tr>
+</table>
+
+@using (Html.BeginForm("Delete", "HotelRoom", FormMethod.Post))
+{
+    <p>
+        <input class="btn btn-primary" type="submit" value="Delete" />
+        <br />
+        <br />
+        <a asp-controller="HotelRoom" asp-action="Index" class="btn btn-primary">Back to List</a>
+    </p>
+}
+
+

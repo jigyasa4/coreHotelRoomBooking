@@ -1,0 +1,107 @@
+﻿@model IEnumerable<coreHotelRoomBookingAdminPortal.Models.Hotel>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Index</h2>
+<a asp-action="Create" asp-controller="Hotel" class="btn btn-success">Insert New Hotel</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelAddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelContactNumber)
+            </th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.HotelCountry)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelCity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelState)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelDistrict)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelEmailId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelRating)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelImage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelTypeId)
+            </th>*@
+            <th>Actions</th>
+        </tr>
+    </thead>
+   <tbody>
+  @foreach(var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modeItem => item.HotelId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modeItem => item.HotelName)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.HotelAddress)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.HotelContactNumber)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(model => item.HotelCountry)
+                </td>
+                <td>
+                  @Html.DisplayFor(model => item.HotelCity)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.HotelState)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.HotelDistrict)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.HotelEmailId)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.HotelRating)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.HotelImage)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.HotelDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.HotelTypeId)
+                </td>*@
+                <td>
+                    <a asp-controller="Hotel" asp-action="Details" asp-route-id="@item.HotelId" class="btn btn-info">Details</a>
+                    <a asp-controller="Hotel" asp-action="Edit" asp-route-id="@item.HotelId" class="btn btn-info">Edit</a> 
+                    <a asp-controller="Hotel" asp-action="Delete" asp-route-id="@item.HotelId" class="btn btn-info">Delete</a>
+                   
+                </td>
+
+            </tr>
+  }
+    </tbody>
+</table>

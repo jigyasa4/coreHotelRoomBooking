@@ -1,0 +1,105 @@
+﻿@model coreHotelRoomBookingAdminPortal.Models.RoomFacility
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this ?</h3>
+@*<form asp-action="Delete" asp-controller="RoomFacility">
+        <label asp-for="IsAvailable"></label>
+        <input type="text" asp-for="IsAvailable" />
+        <br /> <label asp-for="Wifi"></label>
+        <input type="text" asp-for="Wifi" />
+        <br />
+        <label asp-for="AirConditioner"></label>
+        <input type="text" asp-for="AirConditioner" />
+        <br />
+        <label asp-for="Refrigerator"></label>
+        <input type="text" asp-for="Refrigerator" />
+        <br />
+        <label asp-for="RoomFacilityDescription"></label>
+        <input type="text" asp-for="RoomFacilityDescription" />
+        <label asp-for="RoomId"></label>
+        <select asp-for="RoomId" asp-items="ViewBag.hotelrooms"></select>
+        <br />
+        <input type="submit" value="Delete Hotel" class="btn-primary" />
+        @Html.ActionLink("Back to List", "Index")
+
+
+
+    </form>*@
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.RoomFacilityId)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.RoomFacilityId)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.IsAvailable)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.IsAvailable)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Wifi)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.Wifi)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.AirConditioner)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.AirConditioner)
+        </td>
+    </tr>
+    <tr>
+        
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Refrigerator)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.Refrigerator)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.RoomFacilityDescription)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.RoomFacilityDescription)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.RoomId)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.RoomId)
+        </td>
+    </tr>
+</table>
+
+@using (Html.BeginForm("Delete", "RoomFacility", FormMethod.Post))
+{
+    <p>
+        <input class="btn btn-primary" type="submit" value="Delete" />
+        <br />
+        <br />
+        <a asp-controller="RoomFacility" asp-action="Index" class="btn btn-primary">Back to List</a>
+    </p>
+}

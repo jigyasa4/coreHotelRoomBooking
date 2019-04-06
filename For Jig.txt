@@ -1,0 +1,542 @@
+Booking Controler
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using coreHotelRoomBookingUserPanel.Helper;
+using coreHotelRoomBookingUserPanel.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+
+namespace coreHotelRoomBookingUserPanel.Controllers
+{
+    [Route("booking")]
+    public class BookingController : Controller
+    {
+        coreHotelRoomBookingFinalDatabaseContext context = new coreHotelRoomBookingFinalDatabaseContext();
+        [Route ("index")]
+        public IActionResult Index()
+        {
+            var booking = SessionHelper.GetObjectFromJson<List<Item>>(HttpContext.Session, "Booking");
+            ViewBag.booking = booking;
+            if(ViewBag.booking == null)
+            {
+                return View("EmptyCart");
+            }
+            else
+            {
+                ViewBag.total = booking.Sum(item => item.HotelRooms.RoomPrice * item.Quantity);
+            }
+            return View();
+        }
+        
+        [Route("buy/{id}")]
+        public IActionResult Buy (int id)
+        {
+            if (SessionHelper.GetObjectFromJson<List<Item>>(HttpContext.Session,"Booking") == null)
+            {
+                List<Item> booking = new List<Item>();
+                booking.Add(new Item
+                {
+                    HotelRooms = context.HotelRooms.Find(id),
+                    Quantity = 1
+                });
+                SessionHelper.SetObjectAsJson(HttpContext.Session, "Booking", booking);
+            }
+            else
+            {
+                List<Item> booking = SessionHelper.GetObjectFromJson<List<Item>>(HttpContext.Session, "Booking");
+                int index = isExist(id);
+                if (index != -1)
+                {
+                    booking[index].Quantity++;
+                }
+                else
+                {
+                    booking.Add(new Item
+                    {
+                        HotelRooms = context.HotelRooms.Find(id),
+                        Quantity = 1
+                    });
+                    SessionHelper.SetObjectAsJson(HttpContext.Session, "Booking", booking);
+                }
+
+            }
+
+            HotelRooms hotelRoom = context.HotelRooms.Where(x => x.RoomId == id).SingleOrDefault();
+            ViewBag.Hotel = hotelRoom;
+            int hId = ViewBag.Hotel.HotelId;
+            return RedirectToAction("HotelRoomsIndex","Home",new { @id = hId });
+        }
+
+
+        [Route("remove/{id}")]
+        public IActionResult Remove(int id)
+        {
+            List<Item> booking = SessionHelper.GetObjectFromJson<List<Item>>(HttpContext.Session, "Booking");
+            int index = isExist(id);
+            booking.RemoveAt(index);
+            SessionHelper.SetObjectAsJson(HttpContext.Session, "Booking", booking);
+            int count = 0;
+            foreach (var item in booking)
+            {
+                count++;
+            }
+            
+            if (count != 0)
+            {
+               int j = int.Parse(HttpContext.Session.GetString("CartItem"));
+               j--;
+               HttpContext.Session.SetString("CartItem", j.ToString());
+            }
+            else
+            {
+                HttpContext.Session.Remove("CartItem");
+                if (index == 0)
+                {
+                    return View("EmptyCart");
+
+                }
+                
+            }
+            return RedirectToAction("Index");
+        }
+            private int isExist(int id)
+            {
+            List<Item> booking = SessionHelper.GetObjectFromJson<List<Item>>(HttpContext.Session, "Booking");
+            for (int i = 0; i < booking.Count; i++)
+            {
+                if (booking[i].HotelRooms.RoomId.Equals(id))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        [Route("emptycart")]
+        [HttpGet]
+        public IActionResult EmptyCart()
+        {
+            return View();
+        }
+
+        //[Route("checkout")]
+        [HttpGet]
+        public IActionResult Checkout(int id)
+        {
+            var customers = context.Customers.Where(x => x.CustomerId == id).SingleOrDefault();
+            
+            var booking = SessionHelper.GetObjectFromJson<List<Item>>(HttpContext.Session, "Booking");
+            ViewBag.booking = booking;
+            ViewBag.total = booking.Sum(item => item.HotelRooms.RoomPrice * item.Quantity);
+            TempData["total"] = ViewBag.total;
+            TempData["cid"] = customers.CustomerId;
+            return View(customers);
+            //return View();
+        }
+        [HttpPost]
+        public IActionResult Checkout()
+        {
+            var amount = TempData["total"];
+            var cid = (TempData["cid"]).ToString();
+            Bookings bookings = new Bookings()
+            {
+                TotalAmount = Convert.ToSingle(amount),
+                BookingDate = DateTime.Now,
+                CustomerId = int.Parse(cid)
+            };
+
+            ViewBag.Book = bookings;
+            context.Bookings.Add(bookings);
+            context.SaveChanges();
+
+
+            var booking = SessionHelper.GetObjectFromJson<List<Item>>(HttpContext.Session, "Booking");
+            List<BookingRecords> bookingRecords = new List<BookingRecords>();
+            for(int i=0; i<booking.Count;i++)
+            {
+                BookingRecords bookingRecord = new BookingRecords()
+                {
+                    BookingId = bookings.BookingId,
+                    RoomId = booking[i].HotelRooms.RoomId,
+                    Quantity = booking[i].Quantity
+                };
+                bookingRecords.Add(bookingRecord);
+
+            }
+
+            bookingRecords.ForEach(n => context.BookingRecords.Add(n));
+            context.SaveChanges();
+            TempData["cust"] = cid;
+            ViewBag.booking = null;
+            return RedirectToAction("Invoice");
+        }
+
+
+
+        [Route("invoice")]
+        [HttpGet]
+        public IActionResult Invoice()
+        {
+            int custId = int.Parse(TempData["cust"].ToString());
+            Customers customers = context.Customers.Where(x => x.CustomerId == custId).SingleOrDefault();
+            ViewBag.Customers = customers;
+
+            var booking = SessionHelper.GetObjectFromJson<List<Item>>(HttpContext.Session, "Booking");
+            ViewBag.booking = booking;
+            ViewBag.total = booking.Sum(item => item.HotelRooms.RoomPrice * item.Quantity);
+            
+            return View();
+        }
+    }
+
+}
+
+
+// Customers controller
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using coreHotelRoomBookingUserPanel.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace coreHotelRoomBookingUserPanel.Controllers
+{
+    [Route("customer")]
+    public class CustomerController : Controller
+    {
+        coreHotelRoomBookingFinalDatabaseContext context = new coreHotelRoomBookingFinalDatabaseContext();
+
+        [Route("index")]
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+
+
+
+        [Route("mylogin")]
+        [HttpPost]
+        public IActionResult MyLogin(string username, string password)
+        {
+            var user = context.Customers.Where(x => x.CustomerFirstName == username).SingleOrDefault();
+            ViewBag.cust = user;
+            if (user == null)
+            {
+                ViewBag.Error = "Invalid Credentials";
+                return View("Index");
+            }
+            else
+            {
+                var userName = user.CustomerFirstName;
+                int custId = ViewBag.cust.CustomerId;
+                //var passWord = user.UserPassword;
+                if (username != null && password != null && username.Equals(userName) && password.Equals("12345"))
+                {
+                    HttpContext.Session.SetString("uname", username);
+                    return RedirectToAction("Checkout","Booking",new { @id = custId });
+                }
+                else
+                {
+                    ViewBag.Error = "Invalid Credentials";
+                    return View("Index");
+                }
+            }
+        }
+
+        [Route("logout")]
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("uname");
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public ViewResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult Create(Customers c1)
+        {
+            context.Customers.Add(c1);
+            context.SaveChanges();
+            return RedirectToAction("Index", "Customer");
+
+        }
+    }
+}
+
+
+
+Customer Index View
+
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="~/css/Login.css" />
+</head>
+<body class="text-center">
+    <form class="form-signin" method="post" asp-controller="Customer" asp-action="MyLogin">
+        <img class="mb-4" src="~/images/hotelogo.jpg" alt="Hotel Room Booking" width="220" height="72">
+
+        <label for="username" class="sr-only">Username</label>
+        <input type="text" name="username" class="form-control" placeholder="Customer Name" required autofocus>
+        <label for="password" class="sr-only">Password</label>
+        <input type="password" name="password" class="form-control" placeholder="Password" required>
+        <strong>@ViewBag.Error</strong>
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <br />
+        <a asp-controller="Customer" asp-action="Create" class="btn btn-lg btn-primary btn-block">Register</a>
+        <p class="mt-5 mb-3 text-muted">&copy; JAAM</p>
+    </form>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+// Checkout View
+
+@model coreHotelRoomBookingUserPanel.Models.Customers
+@{
+    ViewData["Title"] = "Checkout";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="container">
+    @*<div class="py-5 text-center">
+            <h2>Checkout form</h2>
+            <p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be triggered by attempting to submit the form without completing it.</p>
+        </div>*@
+
+    <div class="row">
+        <div class="col-md-4 order-md-2 mb-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Cart Hotel</span>
+                    @*<span class="badge badge-secondary badge-pill">3</span>*@
+                </h4>
+            <ul class="list-group mb-3">
+                @*@foreach (var item in ViewBag.hotel)
+                {
+                    <li class="list-group-item d-flex justify-content-between lh-condensed">
+                        <div>
+                            <h6 class="my-0">@item.Hotels.HotelId</h6>
+                        </div>
+                    </li>
+
+                }*@
+                @foreach (var item in ViewBag.booking)
+                {
+                    <li class="list-group-item d-flex justify-content-between lh-condensed">
+                        <div>
+                            <h6 class="my-0">@item.HotelRooms.RoomType</h6>
+                            <h6 class="my-0">@item.HotelRooms.HotelId</h6>
+                            <small class="text-muted">@item.HotelRooms.RoomDescription</small>
+                        </div>
+                        <span class="text-muted">@item.HotelRooms.RoomPrice</span>
+                    </li>
+
+                }
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Total (INR)</span>
+                    <strong>@ViewBag.Total</strong>
+                </li>
+
+            </ul>
+
+            @*<form class="card p-2">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Promo code">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-secondary">Redeem</button>
+                        </div>
+                    </div>
+                </form>*@
+        </div>
+
+
+        <div class="col-md-8 order-md-1">
+            <h4 class="mb-3">Customer Address</h4>
+
+            <form asp-controller="Booking" asp-action="Checkout">
+                <table class="table table-hover table table-bordered">
+                    <tr>
+                        <th>
+                            First Name
+                        </th>
+                        <td>
+                            @Html.DisplayFor(model => model.CustomerFirstName)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Last Name
+                        </th>
+                        <td>
+                            @Html.DisplayFor(model => model.CustomerLastName)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Address
+                        </th>
+                        <td>
+                            @Html.DisplayFor(model => model.CustomerAddress)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Contact Number
+                        </th>
+                        <td>
+                            @Html.DisplayFor(model => model.CustomerContactNumber)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Email Id
+                        </th>
+                        <td>
+                            @Html.DisplayFor(model => model.CustomerEmailId)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            State
+                        </th>
+                        <td>
+                            @Html.DisplayFor(model => model.State)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Country
+                        </th>
+                        <td>
+                            @Html.DisplayFor(model => model.Country)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Zip
+                        </th>
+                        <td>
+                            @Html.DisplayFor(model => model.Zip)
+                        </td>
+                    </tr>
+                </table>
+
+                
+                <div class="form-group">
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+@{ 
+    TempData.Keep("cid");
+ } 
+ 
+ 
+ ///Customer Create View
+ 
+ @model coreHotelRoomBookingUserPanel.Models.Customers
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Customer Registration</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="~/css/Template.css" />
+</head>
+<body>
+
+<h4>Customers</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CustomerFirstName" class="control-label"></label>
+                <input asp-for="CustomerFirstName" class="form-control" />
+                <span asp-validation-for="CustomerFirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CustomerLastName" class="control-label"></label>
+                <input asp-for="CustomerLastName" class="form-control" />
+                <span asp-validation-for="CustomerLastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CustomerAddress" class="control-label"></label>
+                <input asp-for="CustomerAddress" class="form-control" />
+                <span asp-validation-for="CustomerAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CustomerContactNumber" class="control-label"></label>
+                <input asp-for="CustomerContactNumber" class="form-control" />
+                <span asp-validation-for="CustomerContactNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CustomerEmailId" class="control-label"></label>
+                <input asp-for="CustomerEmailId" class="form-control" />
+                <span asp-validation-for="CustomerEmailId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Country" class="control-label"></label>
+                <input asp-for="Country" class="form-control" />
+                <span asp-validation-for="Country" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="State" class="control-label"></label>
+                <input asp-for="State" class="form-control" />
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Zip" class="control-label"></label>
+                <input asp-for="Zip" class="form-control" />
+                <span asp-validation-for="Zip" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+</body>
+</html>

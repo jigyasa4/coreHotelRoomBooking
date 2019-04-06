@@ -1,0 +1,71 @@
+﻿@model IEnumerable<coreHotelRoomBookingAdminPortal.Models.HotelRoom>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<h2>Hotel Details</h2>
+<a asp-action="Create" asp-controller="HotelRoom" class="btn btn-success">Insert New Hotel Room</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.RoomId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoomType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoomPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoomDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoomImage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HotelId)
+            </th>
+
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomPrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomImage)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HotelId)
+                </td>
+
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.RoomId"class="btn btn-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.RoomId"class="btn btn-info">Edit</a> 
+                    <a asp-action="Delete" asp-route-id="@item.RoomId"class="btn btn-info">Delete</a>
+                   
+                    @*As index and details are in same controller that is author we can skip writing the controller name*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

@@ -1,0 +1,38 @@
+﻿@model coreHotelRoomBookingAdminPortal.Models.HotelRoom
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Create</h2>
+
+<form asp-action="Create" asp-controller="HotelRoom">
+    <div class="form-group">
+        <label asp-for="RoomType">RoomType</label>
+        <input type="text" asp-for="RoomType" class="form-control" placeholder="Enter Room Type" />
+        <span asp-validation-for="RoomType" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="RoomPrice">RoomPrice</label>
+        <input type="text" asp-for="RoomPrice" class="form-control" placeholder="Enter Room Price" />
+        <span asp-validation-for="RoomPrice" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="RoomDescription">RoomDescription</label>
+        <input type="text" asp-for="RoomDescription" class="form-control" placeholder="Enter Room Description" />
+        <span asp-validation-for="RoomDescription" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="RoomImage">RoomImage</label>
+        <input type="text" asp-for="RoomImage" class="form-control" placeholder="Enter Room Description" />
+        <span asp-validation-for="RoomImage" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="HotelId"></label>
+        <select asp-for="HotelId" asp-items="ViewBag.hotelrooms"></select>
+    </div>
+    <input type="submit" value="Create Hotel Room" class="btn btn-primary" />
+    @Html.ActionLink("Back to List", "Index")
+</form>
+
+ 

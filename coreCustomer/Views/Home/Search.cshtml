@@ -1,0 +1,118 @@
+﻿@model IEnumerable<coreCustomer.Models.Hotels>
+@using Microsoft.AspNetCore.Http
+@{
+    ViewData["Title"] = "Search";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<h2>Search</h2>
+
+<main role="main">
+
+    <!-- <section class="jumbotron text-center">
+         <div class="container">
+             <h1 class="jumbotron-heading">Hotel Room Booking</h1>
+             <p class="lead text-muted">
+                 Welcome
+             </p>
+         </div>
+     </section> -->
+    <section class="jumbotron text-center">
+        <div id="booking" class="section">
+            <div class="section-center">
+                <div class="container">
+                    <div class="row">
+                        <div class="booking-form">
+
+                            <form>
+                                <div class="row no-margin">
+                                    <div class="form-group">
+                                        <span class="form-label">Search Hotel</span>
+                                        <input class="form-control" type="text" name="Search" id="Search" value="@Context.Session.GetString("Search")">
+                                    </div>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <div class="form-group">
+                                        <span class="form-label">Check In</span>
+                                        <input class="form-control" type="date" name="checkIn" id="checkIn" value="@Context.Session.GetString("CheckIn")" required>
+                                    </div>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <div class="form-group">
+                                        <span class="form-label">Check out</span>
+                                        <input class="form-control" type="date" name="CheckOut" id="CheckOut" value="@Context.Session.GetString("CheckOut")" required>
+                                    </div>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <div class="form-group">
+                                        <span class="form-label">Guests</span>
+                                        <select class="form-control">
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>3</option>
+                                        </select>
+                                        <span class="select-arrow"></span>
+                                    </div>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <div class=" form-group">
+                                        <br />
+                                        <div class=" form-btn">
+                                            <button class="btn btn-success" asp-controller="Home" asp-action="Search" type="submit">Check availability</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <main role="main">
+
+
+
+        <div class="album py-5 bg-light">
+            <div class="container">
+
+                <div class="row">
+                    @foreach (var item in ViewBag.Hotel)
+                    {
+                        <!--Thumbnail Starts-->
+                        <div class="col-md-4">
+                            <div class="card mb-4 shadow-sm">
+                                <img src="@item.HotelImage" class="bd-placeholder-img card-img-top image" />
+
+
+                                <div class="card-body">
+                                    <p class="card-text">@item.HotelName</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="btn-group">
+                                            <a asp-controller="HotelRoom" asp-action="Details" asp-route-id="@item.HotelId" class="btn btn-sm btn-outline-secondary">View Rooms</a>
+                                            <a asp-controller="Home" asp-action="Details" asp-route-id="@item.HotelId" class="btn btn-sm btn-outline-secondary">View Details</a>
+                                        </div>
+                                        <small class="text-muted">9 mins</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Thumbnail Ends-->
+                    }
+
+
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+
+
+
+
+    @*<form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" name="Search" id="Search" type="text" placeholder="Search" aria-label="Search">&nbsp;
+            <button class="btn btn-outline-success my-2 my-sm-0" asp-controller="Home" asp-action="Search" type="submit">Search</button>&nbsp;&nbsp;
+            <a class="btn btn-outline-success my-2 my-sm-0" asp-controller="Booking" asp-action="Index">View Cart @Context.Session.GetString("CartItem")</a>
+        </form>*@
+
+
+
+

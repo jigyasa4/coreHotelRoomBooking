@@ -1,0 +1,31 @@
+﻿@model coreHotelRoomBookingAdminPortal.Models.HotelRoom
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Details</h2>
+<table class="table">
+<thead>
+    <tr>
+        <th>@Html.DisplayNameFor(model => model.RoomId)</th>
+        <th>@Html.DisplayFor(model => model.RoomId)</th>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(model => model.RoomType)</th>
+        <th>@Html.DisplayFor(model => model.RoomType)</th>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(model => model.RoomPrice)</th>
+        <th>@Html.DisplayFor(model => model.RoomPrice)</th>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(model => model.RoomDescription)</th>
+        <th>@Html.DisplayFor(model => model.RoomDescription)</th>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(model => model.RoomImage)</th>
+        <th>@Html.DisplayFor(model => model.RoomImage)</th>
+    </tr>
+    </thead>
+</table>
